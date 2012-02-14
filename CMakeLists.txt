@@ -1,2 +1,2 @@
-project(ITKExternalTemplate)
+project(ITKTextureAnalysis)
 itk_module_impl()
