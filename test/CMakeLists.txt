@@ -5,6 +5,7 @@ itk_module_test()
 
 set(ITK${itk-module}Tests
   itkTextureMovingHistogramImageFilter.cxx
+  itkTextureFeatureImageFilterTest.cxx
 )
 
 CreateTestDriver(${itk-module}  "${${itk-module}-Test_LIBRARIES}" "${${itk-module}Tests}")
