@@ -21,11 +21,11 @@
 #include "itkImageFileWriter.h"
 
 
-static void Test1( std::string inFileName )
+static void Test1( const std::string &inFileName, const std::string &outFileName )
 {
   const unsigned int ImageDimension = 3;
   typedef itk::Image<unsigned char, ImageDimension > ImageType;
-  typedef itk::Image<itk::FixedArray<float,6>, ImageDimension > OImageType;
+  typedef itk::Image<itk::FixedArray<float,8>, ImageDimension > OImageType;
   typedef itk::FlatStructuringElement< ImageDimension > KernelType;
   typedef itk::External::TextureMovingHistogramImageFilter< ImageType, OImageType, KernelType > TextureFilterType;
 
@@ -43,6 +43,13 @@ static void Test1( std::string inFileName )
   filter->SetKernel( kernel );
   filter->SetInput( reader->GetOutput() );
   filter->UpdateLargestPossibleRegion();
+
+  typedef itk::ImageFileWriter<OImageType> WriterType;
+
+  WriterType::Pointer writer = WriterType::New();
+  writer->SetFileName( outFileName );
+  writer->SetInput(filter->GetOutput());
+  writer->Update();
 }
 
 
@@ -76,11 +83,16 @@ static void Test2( std::string inFileName )
 int itkTextureMovingHistogramImageFilter( int argc, char *argv[] )
 {
 
-  std::cout << argv[0] << " " << argv[1] << " " << argv[2] << std::endl;
+  if ( argc < 2 )
+    {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << "  inputImageFile outputImageFile" << std::endl;
+    return EXIT_FAILURE;
+    }
 
 
-  Test1( argv[1] );
-  Test2( argv[2] );
+  Test1( argv[1], argv[2] );
+  Test2( argv[1] );
 
   return EXIT_SUCCESS;
 }
