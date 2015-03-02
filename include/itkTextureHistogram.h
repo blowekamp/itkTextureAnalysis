@@ -25,9 +25,11 @@ namespace itk
 namespace Function
 {
 
-/*
+/* \class TextureHistogram
  *
  *
+ *
+ * \ingroup ITKTextureAnalysis
  */
 template< class TInputPixel, class TOutputPixel >
 class TextureHistogram

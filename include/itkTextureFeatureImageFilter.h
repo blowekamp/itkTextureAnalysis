@@ -33,6 +33,8 @@ namespace External
  *  \brief Computes Gray-Level Co-occurence Matrix texture feature per pixel
  *
  * \author Bradley Lowekamp
+ *
+ * \ingroup ITKTextureAnalysis
  */
 
 template< class TInputImage, class TOutputImage>

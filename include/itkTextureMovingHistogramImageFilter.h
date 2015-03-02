@@ -29,7 +29,7 @@ namespace External
  * \class TextureMovingHistogramImageFilter
  * \brief Compute first order statistics in a neighborhood at each pixel
  *
- * \ingroup ITK-TextureAnalysis
+ * \ingroup ITKTextureAnalysis
  */
 
 template< class TInputImage, class TOutputImage, class TKernel >
