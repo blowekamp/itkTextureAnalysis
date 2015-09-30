@@ -19,6 +19,7 @@
 #include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
+#include "itkFilterWatcher.h"
 
 int itkTextureFeatureImageFilterTest( int argc, char **argv )
 {
@@ -65,6 +66,8 @@ int itkTextureFeatureImageFilterTest( int argc, char **argv )
   glcm->SetOffsets( offsets );
   glcm->SetWindowSize( window );
   glcm->SetNumberOfBinsPerAxis( 16 );
+
+  FilterWatcher watcher(glcm);
 
   typedef itk::ImageFileWriter< VectorImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
