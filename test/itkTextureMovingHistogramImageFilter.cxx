@@ -16,6 +16,7 @@
  *
  *=========================================================================*/
 #include "itkTextureMovingHistogramImageFilter.h"
+#include "itkFlatStructuringElement.h"
 #include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
