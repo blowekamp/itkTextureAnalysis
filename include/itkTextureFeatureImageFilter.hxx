@@ -29,8 +29,8 @@ namespace itk
 {
 namespace External
 {
-template< class TImageType, class TOutputImage>
-TextureFeatureImageFilter< TImageType, TOutputImage>
+template< class TImageType, class TOutputImage, class TMaskImage>
+TextureFeatureImageFilter< TImageType, TOutputImage, TMaskImage>
 ::TextureFeatureImageFilter()
 {
 
@@ -43,9 +43,9 @@ TextureFeatureImageFilter< TImageType, TOutputImage>
   m_WindowSize.Fill( 10 );
 }
 
-template< class TImageType, class TOutputImage>
+template< class TImageType, class TOutputImage, class TMaskImage>
 void
-TextureFeatureImageFilter< TImageType, TOutputImage >
+TextureFeatureImageFilter< TImageType, TOutputImage, TMaskImage >
 ::SetOffset(const OffsetType &offset)
 {
   OffsetVectorType offsetVector;
@@ -54,9 +54,9 @@ TextureFeatureImageFilter< TImageType, TOutputImage >
   this->SetOffsets(offsetVector);
 }
 
-template< class TImageType, class TOutputImage>
+template< class TImageType, class TOutputImage, class TMaskImage>
 void
-TextureFeatureImageFilter< TImageType, TOutputImage>
+TextureFeatureImageFilter< TImageType, TOutputImage, TMaskImage>
 ::SetPixelValueMinMax(PixelType min, PixelType max)
 {
   itkDebugMacro("setting Min to " << min << "and Max to " << max);
@@ -65,9 +65,9 @@ TextureFeatureImageFilter< TImageType, TOutputImage>
   this->Modified();
 }
 
-template< class TImageType, class TOutputImage>
+template< class TImageType, class TOutputImage, class TMaskImage>
 void
-TextureFeatureImageFilter< TImageType, TOutputImage>
+TextureFeatureImageFilter< TImageType, TOutputImage, TMaskImage>
 ::GenerateOutputInformation()
 {
   // this methods is overloaded so that if the output image is a
@@ -86,9 +86,9 @@ TextureFeatureImageFilter< TImageType, TOutputImage>
     }
 }
 
-template< class TImageType, class TOutputImage>
+template< class TImageType, class TOutputImage, class TMaskImage>
 void
-TextureFeatureImageFilter< TImageType, TOutputImage>
+TextureFeatureImageFilter< TImageType, TOutputImage, TMaskImage>
 ::BeforeThreadedGenerateData( )
 {
 
@@ -144,13 +144,15 @@ TextureFeatureImageFilter< TImageType, TOutputImage>
 
 
 }
-template< class TImageType, class TOutputImage>
+template< class TImageType, class TOutputImage, class TMaskImage>
 void
-TextureFeatureImageFilter< TImageType, TOutputImage>
+TextureFeatureImageFilter< TImageType, TOutputImage, TMaskImage>
 ::ThreadedGenerateData(const RegionType& outputRegionForThread,
                             ThreadIdType threadId )
 {
   const InputImageType *input = this->GetInput();
+  const MaskImageType  *maskImage = this->GetMaskImage();
+
   OutputImageType *output = this->GetOutput();
 
   // constant for a coocurrence matrix.
@@ -208,24 +210,32 @@ TextureFeatureImageFilter< TImageType, TOutputImage>
 
     while( !nIter.IsAtEnd() )
       {
-      this->FillHistogram( *histogram, nIter );
+      if (!maskImage || maskImage->GetPixel( nIter.GetIndex() ) )
+        {
+        this->FillHistogram( *histogram, nIter );
 
-      featureFilter->SetInput( histogram );
-      featureFilter->Modified();
-      featureFilter->Update();
+        featureFilter->SetInput( histogram );
+        featureFilter->Modified();
+        featureFilter->Update();
 
-      out[0] = featureFilter->GetEnergy();
-      out[1] = featureFilter->GetEntropy();
-      out[2] = featureFilter->GetCorrelation();
-      out[3] = featureFilter->GetInverseDifferenceMoment();
-      out[4] = featureFilter->GetInertia();
-      out[5] = featureFilter->GetClusterShade();
-      out[6] = featureFilter->GetClusterProminence();
-      out[7] = featureFilter->GetHaralickCorrelation();
+        out[0] = featureFilter->GetEnergy();
+        out[1] = featureFilter->GetEntropy();
+        out[2] = featureFilter->GetCorrelation();
+        out[3] = featureFilter->GetInverseDifferenceMoment();
+        out[4] = featureFilter->GetInertia();
+        out[5] = featureFilter->GetClusterShade();
+        out[6] = featureFilter->GetClusterProminence();
+        out[7] = featureFilter->GetHaralickCorrelation();
+
+        histogram->SetToZero();
+        }
+      else
+        {
+        out.Fill(0);
+        }
 
       outIter.Set( out );
 
-      histogram->SetToZero();
       ++nIter;
       ++outIter;
       progress.CompletedPixel();
@@ -236,9 +246,9 @@ TextureFeatureImageFilter< TImageType, TOutputImage>
 }
 
 
-template< class TImageType, class TOutputImage>
+template< class TImageType, class TOutputImage, class TMaskImage>
 void
-TextureFeatureImageFilter< TImageType, TOutputImage>
+TextureFeatureImageFilter< TImageType, TOutputImage, TMaskImage>
 ::FillHistogram( HistogramType &histogram, const itk::ConstNeighborhoodIterator< InputImageType > &niter ) const
 {
 
@@ -271,9 +281,9 @@ TextureFeatureImageFilter< TImageType, TOutputImage>
 
 }
 
-template< class TImageType, class TOutputImage>
+template< class TImageType, class TOutputImage, class TMaskImage>
 void
-TextureFeatureImageFilter< TImageType, TOutputImage>
+TextureFeatureImageFilter< TImageType, TOutputImage, TMaskImage>
 ::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);

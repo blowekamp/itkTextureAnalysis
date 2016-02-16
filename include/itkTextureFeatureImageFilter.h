@@ -37,7 +37,8 @@ namespace External
  * \ingroup ITKTextureAnalysis
  */
 
-template< class TInputImage, class TOutputImage>
+template< class TInputImage, class TOutputImage,
+          typename TMaskImage=Image<unsigned char, TInputImage::ImageDimension> >
 class TextureFeatureImageFilter
   : public ImageToImageFilter< TInputImage, TOutputImage>
 {
@@ -57,6 +58,7 @@ public:
 
   typedef TInputImage                                  InputImageType;
   typedef TOutputImage                                 OutputImageType;
+  typedef TMaskImage                                   MaskImageType;
   typedef typename InputImageType::PixelType           PixelType;
   typedef typename InputImageType::RegionType          RegionType;
   typedef typename InputImageType::SizeType            RadiusType;
@@ -70,6 +72,24 @@ public:
 //   typedef typename HistogramType::Pointer                            HistogramPointer;
 //   typedef typename HistogramType::ConstPointer                       HistogramConstPointer;
   typedef typename HistogramType::MeasurementVectorType              MeasurementVectorType;
+
+  /** Set and Get A mask image
+   *
+   * If a mask is provided, then the cooccurance features will only be
+   * computed at the non-zero pixel of the mask. The output feature
+   * image's values at the zero pixels of the mask will be all zero.
+   **/
+  void SetMaskImage(const TMaskImage *input)
+  {
+    // Process object is not const-correct so the const casting is required.
+    this->SetNthInput( 1, const_cast< TMaskImage * >( input ) );
+  }
+
+  /** Get the mask image */
+  const MaskImageType * GetMaskImage() const
+  {
+    return itkDynamicCastInDebugMode< MaskImageType * > (const_cast< DataObject * >( this->ProcessObject::GetInput(1) ) );
+  }
 
   itkStaticConstMacro(DefaultBinsPerAxis, unsigned int, 64);
 
