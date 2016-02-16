@@ -79,7 +79,7 @@ public:
 
       double entropy = 0.0;
       size_t curCount = 0;
-      typename MapType::iterator medianIt = m_Map.end();
+      //typename MapType::iterator medianIt = m_Map.end();
       for ( typename MapType::iterator i = m_Map.begin(); i != m_Map.end(); ++i )
         {
         double t = double(i->first)*double(i->second);
